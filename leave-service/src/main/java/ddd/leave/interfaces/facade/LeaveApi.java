@@ -1,8 +1,7 @@
 package ddd.leave.interfaces.facade;
 
 import ddd.leave.application.service.LeaveApplicationService;
-import ddd.leave.domain.leave.entity.Leave;
-import ddd.leave.domain.person.entity.Person;
+import ddd.leave.domain.leave.entity.LeaveRecord;
 import ddd.leave.infrastructure.common.api.Response;
 import ddd.leave.interfaces.assembler.LeaveAssembler;
 import ddd.leave.interfaces.dto.LeaveDTO;
@@ -23,29 +22,29 @@ public class LeaveApi {
 
     @PostMapping
     public Response createLeaveInfo(LeaveDTO leaveDTO){
-        Leave leave = LeaveAssembler.toDO(leaveDTO);
-        leaveApplicationService.createLeaveInfo(leave);
+        LeaveRecord leaveRecord = LeaveAssembler.toDO(leaveDTO);
+        leaveApplicationService.createLeaveInfo(leaveRecord);
         return Response.ok();
     }
 
     @PutMapping
     public Response updateLeaveInfo(LeaveDTO leaveDTO){
-        Leave leave = LeaveAssembler.toDO(leaveDTO);
-        leaveApplicationService.updateLeaveInfo(leave);
+        LeaveRecord leaveRecord = LeaveAssembler.toDO(leaveDTO);
+        leaveApplicationService.updateLeaveInfo(leaveRecord);
         return Response.ok();
     }
 
     @PostMapping("/submit")
     public Response submitApproval(LeaveDTO leaveDTO){
-        Leave leave = LeaveAssembler.toDO(leaveDTO);
-        leaveApplicationService.submitApproval(leave);
+        LeaveRecord leaveRecord = LeaveAssembler.toDO(leaveDTO);
+        leaveApplicationService.submitApproval(leaveRecord);
         return Response.ok();
     }
 
     @PostMapping("/{leaveId}")
     public Response findById(@PathVariable String leaveId){
-        Leave leave = leaveApplicationService.getLeaveInfo(leaveId);
-        return Response.ok(LeaveAssembler.toDTO(leave));
+        LeaveRecord leaveRecord = leaveApplicationService.getLeaveInfo(leaveId);
+        return Response.ok(LeaveAssembler.toDTO(leaveRecord));
     }
 
     /**
@@ -55,8 +54,8 @@ public class LeaveApi {
      */
     @PostMapping("/query/applicant/{applicantId}")
     public Response queryByApplicant(@PathVariable String applicantId){
-        List<Leave> leaveList = leaveApplicationService.queryLeaveInfosByApplicant(applicantId);
-        List<LeaveDTO> leaveDTOList = leaveList.stream().map(leave -> LeaveAssembler.toDTO(leave)).collect(Collectors.toList());
+        List<LeaveRecord> leaveRecordList = leaveApplicationService.queryLeaveInfosByApplicant(applicantId);
+        List<LeaveDTO> leaveDTOList = leaveRecordList.stream().map(leave -> LeaveAssembler.toDTO(leave)).collect(Collectors.toList());
         return Response.ok(leaveDTOList);
     }
 
@@ -67,8 +66,8 @@ public class LeaveApi {
      */
     @PostMapping("/query/approver/{approverId}")
     public Response queryByApprover(@PathVariable String approverId){
-        List<Leave> leaveList = leaveApplicationService.queryLeaveInfosByApprover(approverId);
-        List<LeaveDTO> leaveDTOList = leaveList.stream().map(leave -> LeaveAssembler.toDTO(leave)).collect(Collectors.toList());
+        List<LeaveRecord> leaveRecordList = leaveApplicationService.queryLeaveInfosByApprover(approverId);
+        List<LeaveDTO> leaveDTOList = leaveRecordList.stream().map(leave -> LeaveAssembler.toDTO(leave)).collect(Collectors.toList());
         return Response.ok(leaveDTOList);
     }
 }

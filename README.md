@@ -1,4 +1,4 @@
-# leave-sample
+# leaveRecord-sample
 一、说明
 
 本代码源于极客时间《DDD实战课》，DDD知识体系和代码详解可参考专栏。

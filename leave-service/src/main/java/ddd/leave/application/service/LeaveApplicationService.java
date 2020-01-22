@@ -1,12 +1,10 @@
 package ddd.leave.application.service;
 
+import ddd.leave.domain.leave.entity.LeaveRecord;
 import ddd.leave.domain.leave.entity.valueobject.Approver;
-import ddd.leave.domain.leave.entity.Leave;
 import ddd.leave.domain.leave.service.LeaveDomainService;
 import ddd.leave.domain.person.entity.Person;
-import ddd.leave.domain.person.repository.po.PersonPO;
 import ddd.leave.domain.person.service.PersonDomainService;
-import ddd.leave.domain.rule.entity.ApprovalRule;
 import ddd.leave.domain.rule.service.ApprovalRuleDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,43 +23,43 @@ public class LeaveApplicationService{
 
     /**
      * 创建一个请假申请并为审批人生成任务
-     * @param leave
+     * @param leaveRecord
      */
-    public void createLeaveInfo(Leave leave){
+    public void createLeaveInfo(LeaveRecord leaveRecord){
         //get approval leader max level by rule
-        int leaderMaxLevel = approvalRuleDomainService.getLeaderMaxLevel(leave.getApplicant().getPersonType(), leave.getType().toString(), leave.getDuration());
+        int leaderMaxLevel = approvalRuleDomainService.getLeaderMaxLevel(leaveRecord.getApplicant().getPersonType(), leaveRecord.getType().toString(), leaveRecord.getDuration());
         //find next approver
-        Person approver = personDomainService.findFirstApprover(leave.getApplicant().getPersonId(), leaderMaxLevel);
-        leaveDomainService.createLeave(leave, leaderMaxLevel, Approver.fromPerson(approver));
+        Person approver = personDomainService.findFirstApprover(leaveRecord.getApplicant().getPersonId(), leaderMaxLevel);
+        leaveDomainService.createLeave(leaveRecord, leaderMaxLevel, Approver.fromPerson(approver));
     }
 
     /**
      * 更新请假单基本信息
-     * @param leave
+     * @param leaveRecord
      */
-    public void updateLeaveInfo(Leave leave){
-        leaveDomainService.updateLeaveInfo(leave);
+    public void updateLeaveInfo(LeaveRecord leaveRecord){
+        leaveDomainService.updateLeaveInfo(leaveRecord);
     }
 
     /**
      * 提交审批，更新请假单信息
-     * @param leave
+     * @param leaveRecord
      */
-    public void submitApproval(Leave leave){
+    public void submitApproval(LeaveRecord leaveRecord){
         //find next approver
-        Person approver = personDomainService.findNextApprover(leave.getApprover().getPersonId(), leave.getLeaderMaxLevel());
-        leaveDomainService.submitApproval(leave, Approver.fromPerson(approver));
+        Person approver = personDomainService.findNextApprover(leaveRecord.getApprover().getPersonId(), leaveRecord.getLeaderMaxLevel());
+        leaveDomainService.submitApproval(leaveRecord, Approver.fromPerson(approver));
     }
 
-    public Leave getLeaveInfo(String leaveId){
+    public LeaveRecord getLeaveInfo(String leaveId){
         return leaveDomainService.getLeaveInfo(leaveId);
     }
 
-    public List<Leave> queryLeaveInfosByApplicant(String applicantId){
+    public List<LeaveRecord> queryLeaveInfosByApplicant(String applicantId){
         return leaveDomainService.queryLeaveInfosByApplicant(applicantId);
     }
 
-    public List<Leave> queryLeaveInfosByApprover(String approverId){
+    public List<LeaveRecord> queryLeaveInfosByApprover(String approverId){
         return leaveDomainService.queryLeaveInfosByApprover(approverId);
     }
 }

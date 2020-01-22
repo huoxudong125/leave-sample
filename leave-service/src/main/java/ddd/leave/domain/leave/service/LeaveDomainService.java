@@ -1,6 +1,6 @@
 package ddd.leave.domain.leave.service;
 
-import ddd.leave.domain.leave.entity.Leave;
+import ddd.leave.domain.leave.entity.LeaveRecord;
 import ddd.leave.domain.leave.entity.valueobject.ApprovalType;
 import ddd.leave.domain.leave.entity.valueobject.Approver;
 import ddd.leave.domain.leave.event.LeaveEvent;
@@ -28,62 +28,62 @@ public class LeaveDomainService {
     LeaveFactory leaveFactory;
 
     @Transactional
-    public void createLeave(Leave leave, int leaderMaxLevel, Approver approver) {
-        leave.setLeaderMaxLevel(leaderMaxLevel);
-        leave.setApprover(approver);
-        leave.create();
-        leaveRepositoryInterface.save(leaveFactory.createLeavePO(leave));
-        LeaveEvent event = LeaveEvent.create(LeaveEventType.CREATE_EVENT, leave);
+    public void createLeave(LeaveRecord leaveRecord, int leaderMaxLevel, Approver approver) {
+        leaveRecord.setLeaderMaxLevel(leaderMaxLevel);
+        leaveRecord.setApprover(approver);
+        leaveRecord.create();
+        leaveRepositoryInterface.save(leaveFactory.createLeavePO(leaveRecord));
+        LeaveEvent event = LeaveEvent.create(LeaveEventType.CREATE_EVENT, leaveRecord);
         leaveRepositoryInterface.saveEvent(leaveFactory.createLeaveEventPO(event));
         eventPublisher.publish(event);
     }
 
     @Transactional
-    public void updateLeaveInfo(Leave leave) {
-        LeavePO po = leaveRepositoryInterface.findById(leave.getId());
+    public void updateLeaveInfo(LeaveRecord leaveRecord) {
+        LeavePO po = leaveRepositoryInterface.findById(leaveRecord.getId());
         if (null == po) {
-            throw new RuntimeException("leave does not exist");
+            throw new RuntimeException("leaveRecord does not exist");
         }
-        leaveRepositoryInterface.save(leaveFactory.createLeavePO(leave));
+        leaveRepositoryInterface.save(leaveFactory.createLeavePO(leaveRecord));
     }
 
     @Transactional
-    public void submitApproval(Leave leave, Approver approver) {
+    public void submitApproval(LeaveRecord leaveRecord, Approver approver) {
         LeaveEvent event;
-        if ( ApprovalType.REJECT == leave.getCurrentApprovalInfo().getApprovalType()) {
-            //reject, then the leave is finished with REJECTED status
-            leave.reject(approver);
-            event = LeaveEvent.create(LeaveEventType.REJECT_EVENT, leave);
+        if ( ApprovalType.REJECT == leaveRecord.getCurrentApprovalInfo().getApprovalType()) {
+            //reject, then the leaveRecord is finished with REJECTED status
+            leaveRecord.reject(approver);
+            event = LeaveEvent.create(LeaveEventType.REJECT_EVENT, leaveRecord);
         } else {
             if (approver != null) {
                 //agree and has next approver
-                leave.agree(approver);
-                event = LeaveEvent.create(LeaveEventType.AGREE_EVENT, leave);
+                leaveRecord.agree(approver);
+                event = LeaveEvent.create(LeaveEventType.AGREE_EVENT, leaveRecord);
             } else {
-                //agree and hasn't next approver, then the leave is finished with APPROVED status
-                leave.finish();
-                event = LeaveEvent.create(LeaveEventType.APPROVED_EVENT, leave);
+                //agree and hasn't next approver, then the leaveRecord is finished with APPROVED status
+                leaveRecord.finish();
+                event = LeaveEvent.create(LeaveEventType.APPROVED_EVENT, leaveRecord);
             }
         }
-        leave.addHistoryApprovalInfo(leave.getCurrentApprovalInfo());
-        leaveRepositoryInterface.save(leaveFactory.createLeavePO(leave));
+        leaveRecord.addHistoryApprovalInfo(leaveRecord.getCurrentApprovalInfo());
+        leaveRepositoryInterface.save(leaveFactory.createLeavePO(leaveRecord));
         leaveRepositoryInterface.saveEvent(leaveFactory.createLeaveEventPO(event));
         eventPublisher.publish(event);
     }
 
-    public Leave getLeaveInfo(String leaveId) {
+    public LeaveRecord getLeaveInfo(String leaveId) {
         LeavePO leavePO = leaveRepositoryInterface.findById(leaveId);
         return leaveFactory.getLeave(leavePO);
     }
 
-    public List<Leave> queryLeaveInfosByApplicant(String applicantId) {
+    public List<LeaveRecord> queryLeaveInfosByApplicant(String applicantId) {
         List<LeavePO> leavePOList = leaveRepositoryInterface.queryByApplicantId(applicantId);
         return leavePOList.stream()
                 .map(leavePO -> leaveFactory.getLeave(leavePO))
                 .collect(Collectors.toList());
     }
 
-    public List<Leave> queryLeaveInfosByApprover(String approverId) {
+    public List<LeaveRecord> queryLeaveInfosByApprover(String approverId) {
         List<LeavePO> leavePOList = leaveRepositoryInterface.queryByApproverId(approverId);
         return leavePOList.stream()
                 .map(leavePO -> leaveFactory.getLeave(leavePO))

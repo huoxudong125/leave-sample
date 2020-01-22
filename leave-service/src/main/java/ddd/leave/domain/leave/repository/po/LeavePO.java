@@ -1,6 +1,6 @@
 package ddd.leave.domain.leave.repository.po;
 
-import ddd.leave.domain.leave.entity.Leave;
+import ddd.leave.domain.leave.entity.LeaveRecord;
 import ddd.leave.domain.leave.entity.valueobject.LeaveType;
 import ddd.leave.domain.leave.entity.valueobject.Status;
 import ddd.leave.domain.person.entity.valueobject.PersonType;
@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-@Table(name = "Leave")
+@Table(name = "LeaveRecord")
 @Data
 public class LeavePO {
 
@@ -35,8 +35,8 @@ public class LeavePO {
     @Transient
     List<ApprovalInfoPO> historyApprovalInfoPOList;
 
-    public Leave toLeave() {
-        return new Leave();
+    public LeaveRecord toLeave() {
+        return new LeaveRecord();
     }
 
 }

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+
 @RestController
 @RequestMapping("/auth")
 @Slf4j
@@ -23,6 +25,11 @@ public class AuthApi {
 
     @PostMapping("/login")
     public Response login(PersonDTO personDTO){
-        return loginApplicationService.login(PersonAssembler.toDO(personDTO));
+        try {
+            return loginApplicationService.login(PersonAssembler.toDO(personDTO));
+        } catch (ParseException e) {
+            log.error(e.getMessage());
+            return Response.failed(e.getMessage());
+        }
     }
 }
