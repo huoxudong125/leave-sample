@@ -26,7 +26,8 @@ public class PersonRepositoryImpl implements PersonRepository {
 
     @Override
     public PersonPO findById(String id) {
-        return personDao.findById(id).orElseThrow(() -> new RuntimeException("未找到用户"));
+//        return personDao.findById(id).orElseThrow(() -> new RuntimeException("未找到用户"));
+        return personDao.findById(id).orElse(null);
     }
 
     @Override

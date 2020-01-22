@@ -35,3 +35,29 @@
 
 ## REFERENCE
 [USING MYSQL IN SPRING BOOT VIA SPRING DATA JPA AND HIBERNATE](https://blog.netgloo.com/2014/10/27/using-mysql-in-spring-boot-via-spring-data-jpa-and-hibernate/)
+
+## DEMO CODE
+### Person
+#### Create person 
+`POST` http://localhost:8080/person
+       
+- Request (`Content-Type`:`application/json;charset=UTF-8`)
+```json
+{
+    "personId":"1",
+    "personName": "test",
+    "roleId": "1",
+    "personType": "INTERNAL",
+    "createTime": "2020-01-23 12:00:00",
+    "lastModifyTime": "2020-01-23 12:00:00",
+    "status": "ENABLE"
+}
+```
+- Response
+```json
+{
+    "status": "SUCCESS",
+    "msg": null,
+    "data": null
+}
+```
